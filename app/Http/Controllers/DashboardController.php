@@ -8,6 +8,7 @@ use App\Models\Medicine;
 use App\Models\Treatment;
 use App\Models\Department;
 use App\Models\MedicineLog;
+use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +52,7 @@ class DashboardController extends Controller
         $personnelWithRecords = Personnel::with(['medicalRecord', 'department'])->when($departmentId, fn ($q) => $q->where('department_id', $departmentId))->get();
         $overweightPersonnel = $personnelWithRecords->filter(fn ($p) => in_array($p->medicalRecord?->bmi_category, ['Overweight', 'Obese'], true))->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'department' => $p->department?->name, 'bmi' => $p->medicalRecord?->bmi, 'category' => $p->medicalRecord?->bmi_category])->values();
         $bmiBreakdown = $personnelWithRecords->groupBy(fn ($p) => $p->medicalRecord?->bmi_category ?: 'No record')->map->count();
+        $completedVisits = Appointment::with('patient')->whereIn('status', ['attended', 'completed'])->latest('appointment_date')->get()->map(fn ($visit) => ['id' => $visit->id, 'patient' => $visit->patient?->name ?: 'Unknown patient', 'patient_type' => class_basename($visit->patient_type), 'date' => optional($visit->appointment_date)->format('M d, Y h:i A'), 'reason' => $visit->reason_for_visit]);
 
         // Recent treatments
         $recentTreatments = Treatment::with('treatedBy')
@@ -79,6 +81,7 @@ class DashboardController extends Controller
             'overweightPersonnel' => $overweightPersonnel,
             'bmiBreakdown' => $bmiBreakdown,
             'expiringMedicines' => Medicine::whereNotNull('expiry_date')->whereBetween('expiry_date', [Carbon::today(), Carbon::today()->addMonths(2)])->orderBy('expiry_date')->get(['id','name','expiry_date']),
+            'completedVisits' => $completedVisits,
             'recentTreatments' => $recentTreatments,
             'departments' => $departments,
             'filters' => [
