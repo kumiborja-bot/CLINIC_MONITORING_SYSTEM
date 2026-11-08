@@ -253,19 +253,19 @@ const getStatusBadgeClass = (status) => {
 </script>
 
 <template>
-    <Head title="Visit Monitoring" />
+    <Head title="Appointments & Prescriptions" />
 
     <AuthenticatedLayout>
         <template #header>
-            Visit Monitoring
+            Appointments & Prescription Management
         </template>
 
         <div class="visit-monitoring-page space-y-4 min-w-0 overflow-x-hidden">
             <!-- Header Section -->
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm">
                 <div>
-                    <h2 class="text-xl font-bold text-gray-900">Clinic Visit Monitoring</h2>
-                    <p class="text-sm text-gray-500 mt-1">Schedule, monitor, and complete clinic visits, consultations, and follow-up care.</p>
+                    <h2 class="text-xl font-bold text-gray-900">Clinic Appointment & Notification Hub</h2>
+                    <p class="text-sm text-gray-500 mt-1">Schedule clinic appointments, trigger automated email notifications, record consultations, and issue digital prescriptions.</p>
                 </div>
                 <div>
                     <button
@@ -273,7 +273,7 @@ const getStatusBadgeClass = (status) => {
                         class="inline-flex items-center gap-2 px-4 py-2.5 bg-[#095D86] text-white text-sm font-semibold rounded-lg hover:bg-[#074766] transition-colors shadow-sm"
                     >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        New Visit
+                        New Appointment
                     </button>
                 </div>
             </div>
