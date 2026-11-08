@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -26,6 +26,16 @@ const medicineChart = ref(null);
 const bmiChart = ref(null);
 const showOverweight = ref(false);
 const showVisits = ref(false);
+let bmiChartInstance = null;
+
+const renderBmiChart = async () => {
+    await nextTick();
+    if (!bmiChart.value) return;
+    if (bmiChartInstance) bmiChartInstance.destroy();
+    bmiChartInstance = new Chart(bmiChart.value, { type: 'doughnut', data: { labels: Object.keys(props.bmiBreakdown || {}), datasets: [{ data: Object.values(props.bmiBreakdown || {}), backgroundColor: ['#f97316','#ef4444','#22c55e','#eab308','#94a3b8'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+};
+
+watch(showOverweight, (visible) => { if (!visible) renderBmiChart(); });
 
 const filterByDepartment = () => {
     router.get(route('dashboard'), { department_id: selectedDept.value || undefined }, { preserveState: true });
@@ -77,7 +87,7 @@ onMounted(() => {
             },
         });
     }
-    if (bmiChart.value) new Chart(bmiChart.value, { type: 'doughnut', data: { labels: Object.keys(props.bmiBreakdown || {}), datasets: [{ data: Object.values(props.bmiBreakdown || {}), backgroundColor: ['#f97316','#ef4444','#22c55e','#eab308','#94a3b8'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+    renderBmiChart();
 });
 
 const statCards = [
