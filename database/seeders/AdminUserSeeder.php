@@ -30,7 +30,7 @@ class AdminUserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'joey.oliva@mmaci.edu.ph'],
             [
-                'name' => 'JOEY JAY C. OLIVA, MD, FPSMS',
+                'name' => 'DR. JOEVY JAY C. OLIVA, MD, FPSMS',
                 'password' => bcrypt('password'),
                 'role' => 'doctor',
             ]
