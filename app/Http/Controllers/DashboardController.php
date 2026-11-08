@@ -11,6 +11,7 @@ use App\Models\MedicineLog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -47,6 +48,10 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        $personnelWithRecords = Personnel::with(['medicalRecord', 'department'])->when($departmentId, fn ($q) => $q->where('department_id', $departmentId))->get();
+        $overweightPersonnel = $personnelWithRecords->filter(fn ($p) => in_array($p->medicalRecord?->bmi_category, ['Overweight', 'Obese'], true))->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'department' => $p->department?->name, 'bmi' => $p->medicalRecord?->bmi, 'category' => $p->medicalRecord?->bmi_category])->values();
+        $bmiBreakdown = $personnelWithRecords->groupBy(fn ($p) => $p->medicalRecord?->bmi_category ?: 'No record')->map->count();
+
         // Recent treatments
         $recentTreatments = Treatment::with('treatedBy')
             ->latest('treated_at')
@@ -71,6 +76,9 @@ class DashboardController extends Controller
             'commonIllnesses' => $commonIllnesses,
             'topMedicines' => $topMedicines,
             'lowStockMedicines' => $lowStockMedicines,
+            'overweightPersonnel' => $overweightPersonnel,
+            'bmiBreakdown' => $bmiBreakdown,
+            'expiringMedicines' => Medicine::whereNotNull('expiry_date')->whereBetween('expiry_date', [Carbon::today(), Carbon::today()->addMonths(2)])->orderBy('expiry_date')->get(['id','name','expiry_date']),
             'recentTreatments' => $recentTreatments,
             'departments' => $departments,
             'filters' => [
