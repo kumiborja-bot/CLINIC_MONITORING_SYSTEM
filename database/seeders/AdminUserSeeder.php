@@ -26,5 +26,23 @@ class AdminUserSeeder extends Seeder
                 'role' => 'nurse',
             ]
         );
+
+        User::updateOrCreate(
+            ['email' => 'joey.oliva@mmaci.edu.ph'],
+            [
+                'name' => 'JOEY JAY C. OLIVA, MD, FPSMS',
+                'password' => bcrypt('password'),
+                'role' => 'nurse',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'gemmalyn.hermoso@mmaci.edu.ph'],
+            [
+                'name' => 'DR. GEMMALYN G. HERMOSO',
+                'password' => bcrypt('password'),
+                'role' => 'nurse',
+            ]
+        );
     }
 }
