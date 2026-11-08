@@ -583,7 +583,7 @@ const getStatusBadgeClass = (status) => {
                             >
                                 <option value="">-- Select Provider --</option>
                                 <option v-for="user in providers" :key="user.id" :value="user.id">
-                                    {{ user.name }} ({{ user.role }})
+                                    {{ user.name }} ({{ user.role === 'doctor' ? 'Doctor' : user.role }})
                                 </option>
                             </select>
                         </div>

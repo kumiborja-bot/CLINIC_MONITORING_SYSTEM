@@ -32,7 +32,7 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'JOEY JAY C. OLIVA, MD, FPSMS',
                 'password' => bcrypt('password'),
-                'role' => 'nurse',
+                'role' => 'doctor',
             ]
         );
 
@@ -41,7 +41,7 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'DR. GEMMALYN G. HERMOSO',
                 'password' => bcrypt('password'),
-                'role' => 'nurse',
+                'role' => 'doctor',
             ]
         );
     }
