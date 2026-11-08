@@ -260,7 +260,7 @@ const getStatusBadgeClass = (status) => {
             Visit Monitoring
         </template>
 
-        <div class="space-y-6">
+        <div class="space-y-6 min-w-0 overflow-x-hidden">
             <!-- Header Section -->
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm">
                 <div>
@@ -279,7 +279,7 @@ const getStatusBadgeClass = (status) => {
             </div>
 
             <!-- Stats Counter Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
                 <div class="bg-white p-4 rounded-xl border border-gray-200/80 shadow-sm">
                     <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Appointments</p>
                     <p class="text-2xl font-bold text-gray-900 mt-1">{{ stats.total }}</p>
@@ -303,7 +303,7 @@ const getStatusBadgeClass = (status) => {
             </div>
 
             <!-- Filters Section -->
-            <div class="bg-white p-4 rounded-xl border border-gray-200/80 shadow-sm flex flex-col md:flex-row items-center gap-4">
+            <div class="bg-white p-4 rounded-xl border border-gray-200/80 shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center gap-4 min-w-0">
                 <div class="flex-1 w-full relative">
                     <input
                         v-model="search"
