@@ -9,6 +9,7 @@ use App\Models\Treatment;
 use App\Models\Department;
 use App\Models\MedicineLog;
 use App\Models\Appointment;
+use App\Models\MedicalRecord;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,7 @@ class DashboardController extends Controller
         // Stats
         $studentsCount = Student::when($departmentId, fn ($q) => $q->where('department_id', $departmentId))->count();
         $personnelCount = Personnel::when($departmentId, fn ($q) => $q->where('department_id', $departmentId))->count();
-        $medicinesCount = Medicine::count();
+        $medicinesCount = Medicine::where('stock_quantity', '>', 0)->count();
         
         // Treatments Today
         $treatmentsTodayCount = Treatment::whereDate('treated_at', \Carbon\Carbon::today())->count();
@@ -50,9 +51,12 @@ class DashboardController extends Controller
             ->get();
 
         $personnelWithRecords = Personnel::with(['medicalRecord', 'department'])->when($departmentId, fn ($q) => $q->where('department_id', $departmentId))->get();
-        $overweightPersonnel = $personnelWithRecords->filter(fn ($p) => in_array($p->medicalRecord?->bmi_category, ['Overweight', 'Obese'], true))->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'department' => $p->department?->name, 'bmi' => $p->medicalRecord?->bmi, 'category' => $p->medicalRecord?->bmi_category])->values();
-        $bmiBreakdown = $personnelWithRecords->groupBy(fn ($p) => $p->medicalRecord?->bmi_category ?: 'No record')->map->count();
-        $completedVisits = Appointment::with('patient')->whereIn('status', ['attended', 'completed'])->latest('appointment_date')->get()->map(fn ($visit) => ['id' => $visit->id, 'patient' => $visit->patient?->name ?: 'Unknown patient', 'patient_type' => class_basename($visit->patient_type), 'date' => optional($visit->appointment_date)->format('M d, Y h:i A'), 'reason' => $visit->reason_for_visit]);
+        $bmiCategory = fn ($p) => ($p->medicalRecord && $p->medicalRecord->height_cm > 0 && $p->medicalRecord->weight_kg > 0)
+            ? MedicalRecord::calculateBmi((float) $p->medicalRecord->height_cm, (float) $p->medicalRecord->weight_kg)['category']
+            : 'No record';
+        $overweightPersonnel = $personnelWithRecords->filter(fn ($p) => in_array($bmiCategory($p), ['Overweight', 'Obese'], true))->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'department' => $p->department?->name, 'bmi' => MedicalRecord::calculateBmi((float) $p->medicalRecord->height_cm, (float) $p->medicalRecord->weight_kg)['bmi'], 'category' => $bmiCategory($p)])->values();
+        $bmiBreakdown = $personnelWithRecords->groupBy($bmiCategory)->map->count();
+        $completedVisits = Appointment::with('patient')->whereIn('status', ['attended', 'completed'])->where('appointment_date', '<=', now())->latest('appointment_date')->get()->map(fn ($visit) => ['id' => $visit->id, 'patient' => $visit->patient?->name ?: 'Unknown patient', 'patient_type' => class_basename($visit->patient_type), 'date' => optional($visit->appointment_date)->format('M d, Y h:i A'), 'reason' => $visit->reason_for_visit]);
 
         // Recent treatments
         $recentTreatments = Treatment::with('treatedBy')
