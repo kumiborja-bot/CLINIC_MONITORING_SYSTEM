@@ -260,7 +260,7 @@ const getStatusBadgeClass = (status) => {
             Visit Monitoring
         </template>
 
-        <div class="space-y-6 min-w-0 overflow-x-hidden">
+        <div class="visit-monitoring-page space-y-4 min-w-0 overflow-x-hidden">
             <!-- Header Section -->
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm">
                 <div>
@@ -910,3 +910,15 @@ const getStatusBadgeClass = (status) => {
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.visit-monitoring-page :deep(.text-xl) { font-size: 1rem; line-height: 1.35rem; }
+.visit-monitoring-page :deep(.text-2xl) { font-size: 1.35rem; line-height: 1.6rem; }
+.visit-monitoring-page :deep(.p-6) { padding: 1rem; }
+.visit-monitoring-page :deep(.p-4) { padding: .75rem; }
+.visit-monitoring-page :deep(.px-6) { padding-left: .75rem; padding-right: .75rem; }
+.visit-monitoring-page :deep(.py-3\.5) { padding-top: .65rem; padding-bottom: .65rem; }
+.visit-monitoring-page :deep(th), .visit-monitoring-page :deep(td) { font-size: .72rem; }
+.visit-monitoring-page :deep(th) { white-space: nowrap; }
+.visit-monitoring-page :deep(table) { min-width: 0; }
+</style>
