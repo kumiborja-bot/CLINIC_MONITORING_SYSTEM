@@ -76,6 +76,16 @@ const bmiColor = computed(() => {
     return c[bmiCategory.value] || 'text-gray-500 bg-gray-50';
 });
 
+const bloodPressureStatus = computed(() => {
+    const match = String(form.blood_pressure || '').match(/(\d{2,3})\s*\/\s*(\d{2,3})/);
+    if (!match) return '';
+    const systolic = Number(match[1]); const diastolic = Number(match[2]);
+    if (systolic >= 140 || diastolic >= 90) return 'High blood pressure';
+    if (systolic < 90 || diastolic < 60) return 'Low blood pressure';
+    return 'Normal blood pressure';
+});
+const bloodPressureColor = computed(() => ({ 'High blood pressure': 'text-red-700 bg-red-50', 'Low blood pressure': 'text-blue-700 bg-blue-50', 'Normal blood pressure': 'text-green-700 bg-green-50' }[bloodPressureStatus.value] || 'text-gray-500 bg-gray-50'));
+
 // Courses for selected department
 const availableCourses = computed(() => {
     const dept = props.departments.find(d => d.id == form.department_id);
@@ -315,6 +325,7 @@ const searchCsv = async () => {
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1">Blood Pressure</label>
                             <input v-model="form.blood_pressure" type="text" placeholder="120/80" class="w-full text-sm rounded-lg border-gray-200 focus:ring-mustard-500 focus:border-mustard-500" />
+                            <span v-if="bloodPressureStatus" class="inline-block mt-1 px-2 py-1 rounded-full text-xs font-semibold" :class="bloodPressureColor">{{ bloodPressureStatus }}</span>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-600 mb-1">Oxygen Saturation (%)</label>
