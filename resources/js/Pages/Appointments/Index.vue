@@ -327,6 +327,7 @@ const getStatusBadgeClass = (status) => {
                         <option value="rescheduled">Rescheduled</option>
                         <option value="attended">Attended</option>
                         <option value="completed">Completed</option>
+                        <option value="history">Visit History</option>
                         <option value="cancelled">Cancelled</option>
                     </select>
                 </div>

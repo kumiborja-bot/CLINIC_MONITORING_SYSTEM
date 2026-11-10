@@ -42,7 +42,11 @@ class AppointmentController extends Controller
         }
 
         if ($status && $status !== 'all') {
-            $query->where('status', $status);
+            if ($status === 'history') {
+                $query->whereIn('status', ['attended', 'completed']);
+            } else {
+                $query->where('status', $status);
+            }
         }
 
         if ($patientType && $patientType !== 'all') {
