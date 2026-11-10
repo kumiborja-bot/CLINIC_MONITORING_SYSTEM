@@ -62,6 +62,8 @@ class StudentImportService
 
         $importedCount = 0;
         $skippedCount = 0;
+        $duplicateCount = 0;
+        $totalRecords = 0;
         $errors = [];
         $rowCount = 1;
 
@@ -75,6 +77,7 @@ class StudentImportService
                 if (empty($row) || (count($row) === 1 && empty($row[0]))) {
                     continue;
                 }
+                $totalRecords++;
 
                 // Helper to get value dynamically by mapped header key
                 $getValue = function($key) use ($row, $headerMap) {
@@ -87,6 +90,11 @@ class StudentImportService
                 if (empty($idNo)) {
                     $skippedCount++;
                     $errors[] = "Row {$rowCount}: Skipped due to missing Student ID / IDNO.";
+                    continue;
+                }
+                if (Student::where('student_id_number', $idNo)->exists()) {
+                    $duplicateCount++;
+                    $errors[] = "Row {$rowCount}: Duplicate student ID '{$idNo}' skipped.";
                     continue;
                 }
 
@@ -174,9 +182,8 @@ class StudentImportService
                 }
 
                 // Update or Create Student
-                $student = Student::updateOrCreate(
-                    ['student_id_number' => $idNo],
-                    [
+                $student = Student::create([
+                        'student_id_number' => $idNo,
                         'name' => $name,
                         'birthdate' => $birthdate,
                         'age' => $age,
@@ -188,8 +195,7 @@ class StudentImportService
                         'emergency_contact_person' => $emergencyPerson ?: null,
                         'emergency_contact_relationship' => $emergencyRelationship ?: null,
                         'emergency_contact_address' => $emergencyPerson ? $address : null,
-                    ]
-                );
+                    ]);
 
                 // Handle Disability / Medical Record creation
                 $disability = $getValue('disability');
@@ -219,6 +225,9 @@ class StudentImportService
                 'message' => "Import completed successfully.",
                 'imported_count' => $importedCount,
                 'skipped_count' => $skippedCount,
+                'duplicate_count' => $duplicateCount,
+                'total_count' => $totalRecords,
+                'failed_count' => $skippedCount,
                 'errors' => $errors
             ];
 
@@ -230,6 +239,8 @@ class StudentImportService
                 'success' => false,
                 'message' => "Import failed: " . $e->getMessage(),
                 'imported_count' => 0,
+                'duplicate_count' => $duplicateCount ?? 0,
+                'total_count' => $totalRecords ?? 0,
                 'errors' => [$e->getMessage()]
             ];
         }

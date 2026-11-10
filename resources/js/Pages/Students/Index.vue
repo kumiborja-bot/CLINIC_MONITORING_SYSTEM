@@ -1,13 +1,15 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
+import { ref, watch, computed } from 'vue';
 
 const props = defineProps({
     students: Object,
     departments: Array,
     filters: Object,
 });
+const page = usePage();
+const importReport = computed(() => page.props.flash?.import_report);
 
 const search = ref(props.filters?.search || '');
 const departmentId = ref(props.filters?.department_id || '');
@@ -85,6 +87,12 @@ const handleFileUpload = (event) => {
     <Head title="Students" />
     <AuthenticatedLayout>
         <template #header>Students</template>
+
+        <div v-if="importReport" class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <p class="font-semibold">CSV import summary</p>
+            <p class="mt-1 text-xs">Found {{ importReport.total_count || 0 }} record(s): imported {{ importReport.imported_count || 0 }} new, skipped {{ importReport.duplicate_count || 0 }} duplicate(s), failed {{ importReport.failed_count || 0 }}.</p>
+            <ul v-if="importReport.errors?.length" class="mt-2 list-disc pl-5 text-xs"><li v-for="(error, index) in importReport.errors.slice(0, 10)" :key="index">{{ error }}</li></ul>
+        </div>
 
         <!-- Top Bar -->
         <div class="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

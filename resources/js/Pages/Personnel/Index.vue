@@ -98,8 +98,7 @@ const handleFileUpload = (event) => {
                 <div class="min-w-0">
                     <p class="font-semibold">CSV import details</p>
                     <p class="mt-1 text-xs text-amber-800">
-                        Imported {{ importReport.imported_count || 0 }} personnel.
-                        Skipped {{ importReport.skipped_count || 0 }} row(s).
+                        Found {{ importReport.total_count || 0 }} record(s): imported {{ importReport.imported_count || 0 }} new, skipped {{ importReport.duplicate_count || 0 }} duplicate(s), failed {{ importReport.failed_count || 0 }}.
                     </p>
                     <ul class="mt-2 list-disc space-y-1 pl-5">
                         <li v-for="(error, index) in importReport.errors.slice(0, 10)" :key="index">

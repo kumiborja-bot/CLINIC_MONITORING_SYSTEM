@@ -75,6 +75,8 @@ class PersonnelImportService
 
         $importedCount = 0;
         $skippedCount = 0;
+        $duplicateCount = 0;
+        $totalRecords = 0;
         $errors = $headerValidation['warnings'];
         $rowCount = 1;
 
@@ -88,6 +90,7 @@ class PersonnelImportService
                 if (empty($row) || (count($row) === 1 && empty($row[0]))) {
                     continue;
                 }
+                $totalRecords++;
 
                 if (count($row) !== count($headers)) {
                     $skippedCount++;
@@ -106,6 +109,11 @@ class PersonnelImportService
                 if (empty($employeeId)) {
                     $skippedCount++;
                     $errors[] = "Row {$rowCount}: Skipped due to missing Employee ID.";
+                    continue;
+                }
+                if (Personnel::where('employee_id', $employeeId)->exists()) {
+                    $duplicateCount++;
+                    $errors[] = "Row {$rowCount}: Duplicate employee ID '{$employeeId}' skipped.";
                     continue;
                 }
 
@@ -166,9 +174,8 @@ class PersonnelImportService
                 }
 
                 // Update or Create Personnel
-                $personnel = Personnel::updateOrCreate(
-                    ['employee_id' => $employeeId],
-                    [
+                $personnel = Personnel::create([
+                        'employee_id' => $employeeId,
                         'name' => $name,
                         'birthdate' => null,
                         'age' => null,
@@ -183,8 +190,7 @@ class PersonnelImportService
                         'emergency_contact_relationship' => null,
                         'emergency_contact_address' => null,
                         'emergency_contact_no' => null,
-                    ]
-                );
+                    ]);
 
                 // Handle Medical Record
                 $disability = $getValue('disability');
@@ -214,6 +220,9 @@ class PersonnelImportService
                 'message' => "Import completed successfully.",
                 'imported_count' => $importedCount,
                 'skipped_count' => $skippedCount,
+                'duplicate_count' => $duplicateCount,
+                'total_count' => $totalRecords,
+                'failed_count' => $skippedCount,
                 'errors' => $errors,
                 'warnings' => $headerValidation['warnings'],
             ];
@@ -227,6 +236,8 @@ class PersonnelImportService
                 'message' => "Import failed: " . $e->getMessage(),
                 'imported_count' => 0,
                 'skipped_count' => $skippedCount,
+                'duplicate_count' => $duplicateCount ?? 0,
+                'total_count' => $totalRecords ?? 0,
                 'errors' => array_merge($errors, [$e->getMessage()]),
                 'warnings' => $headerValidation['warnings'] ?? [],
             ];

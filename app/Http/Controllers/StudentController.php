@@ -238,7 +238,7 @@ class StudentController extends Controller
         $result = $importService->importFromPath($tempPath);
 
         if ($result['success']) {
-            return redirect()->back()->with('success', "Import completed! Imported {$result['imported_count']} students.");
+            return redirect()->back()->with('success', "Import completed! Imported {$result['imported_count']} new students; skipped {$result['duplicate_count']} duplicates.")->with('import_report', $result);
         }
 
         return redirect()->back()->with('error', $result['message']);
@@ -251,7 +251,7 @@ class StudentController extends Controller
         $result = $importService->importFromPath($filePath);
 
         if ($result['success']) {
-            return redirect()->back()->with('success', "Local import completed! Imported {$result['imported_count']} students.");
+            return redirect()->back()->with('success', "Local import completed! Imported {$result['imported_count']} new students; skipped {$result['duplicate_count']} duplicates.")->with('import_report', $result);
         }
 
         return redirect()->back()->with('error', $result['message']);

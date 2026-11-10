@@ -240,7 +240,7 @@ class PersonnelController extends Controller
         $result = $importService->importFromPath($tempPath);
 
         if ($result['success']) {
-            $message = "Import completed! Imported {$result['imported_count']} personnel.";
+            $message = "Import completed! Imported {$result['imported_count']} new personnel; skipped {$result['duplicate_count']} duplicates.";
             if (($result['skipped_count'] ?? 0) > 0 || !empty($result['errors'])) {
                 $message .= " Skipped " . ($result['skipped_count'] ?? 0) . " row(s).";
             }
