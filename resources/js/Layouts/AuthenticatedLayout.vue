@@ -139,7 +139,7 @@ const isActive = (routeName) => {
                                 <span class="hidden md:inline">{{ user.name }}</span>
                                 <span class="hidden md:inline px-2 py-0.5 text-xs rounded-full"
                                       :class="user.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'">
-                                    {{ user.role }}
+                                    {{ ({ admin: 'Admin', head_nurse: 'Head Nurse', assistant_nurse: 'Assistant Nurse', doctor: 'Doctor', nurse: 'Nurse' }[user.role] || user.role) }}
                                 </span>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </button>
