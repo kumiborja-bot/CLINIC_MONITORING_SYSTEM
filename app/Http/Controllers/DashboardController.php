@@ -56,7 +56,7 @@ class DashboardController extends Controller
             : 'No record';
         $overweightPersonnel = $personnelWithRecords->filter(fn ($p) => in_array($bmiCategory($p), ['Overweight', 'Obese'], true))->map(fn ($p) => ['id' => $p->id, 'name' => $p->name, 'department' => $p->department?->name, 'bmi' => MedicalRecord::calculateBmi((float) $p->medicalRecord->height_cm, (float) $p->medicalRecord->weight_kg)['bmi'], 'category' => $bmiCategory($p)])->values();
         $bmiBreakdown = $personnelWithRecords->groupBy($bmiCategory)->map->count();
-        $completedVisits = Appointment::with('patient')->whereIn('status', ['attended', 'completed'])->where('appointment_date', '<=', now())->latest('appointment_date')->get()->map(fn ($visit) => ['id' => $visit->id, 'patient' => $visit->patient?->name ?: 'Unknown patient', 'patient_type' => class_basename($visit->patient_type), 'date' => optional($visit->appointment_date)->format('M d, Y h:i A'), 'reason' => $visit->reason_for_visit]);
+        $completedVisits = Appointment::with('patient')->whereIn('status', ['attended', 'completed'])->whereDate('appointment_date', Carbon::today())->where('appointment_date', '<=', now())->latest('appointment_date')->get()->map(fn ($visit) => ['id' => $visit->id, 'patient' => $visit->patient?->name ?: 'Unknown patient', 'patient_type' => class_basename($visit->patient_type), 'date' => optional($visit->appointment_date)->format('M d, Y h:i A'), 'reason' => $visit->reason_for_visit]);
 
         // Recent treatments
         $recentTreatments = Treatment::with('treatedBy')
