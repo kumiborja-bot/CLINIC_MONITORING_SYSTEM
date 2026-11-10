@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, onMounted, watch, nextTick } from 'vue';
 import { Chart, registerables } from 'chart.js';
+import { formatDate } from '@/utils/dateFormat';
 
 Chart.register(...registerables);
 
@@ -139,7 +140,7 @@ const statCards = [
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:col-span-2" v-if="showOverweight"><div v-if="overweightPersonnel?.length" class="grid grid-cols-1 sm:grid-cols-2 gap-2"><div v-for="person in overweightPersonnel" :key="person.id" class="rounded-lg bg-orange-50 px-3 py-2"><p class="text-sm font-semibold text-gray-800">{{ person.name }}</p><p class="text-xs text-gray-500">{{ person.department || 'No department' }} · BMI {{ person.bmi }} ({{ person.category }})</p></div></div><p v-else class="text-sm text-gray-400">No overweight personnel recorded.</p></div>
             <div v-else class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 lg:col-span-2"><h3 class="text-sm font-semibold text-gray-800 mb-2">Personnel BMI Breakdown</h3><div class="h-36"><canvas ref="bmiChart"></canvas></div></div>
         </div>
-        <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4"><h3 class="text-sm font-semibold text-amber-800">Medicine Expiry Alert — within 2 months</h3><div v-if="expiringMedicines?.length" class="mt-2 flex flex-wrap gap-2"><span v-for="m in expiringMedicines" :key="m.id" class="rounded-full bg-white px-3 py-1 text-xs font-medium text-amber-700">{{ m.name }} · {{ m.expiry_date }}</span></div><p v-else class="mt-2 text-sm text-amber-700">No medicines are expiring within the next 2 months.</p></div>
+        <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4"><h3 class="text-sm font-semibold text-amber-800">Medicine Expiry Alert — within 2 months</h3><div v-if="expiringMedicines?.length" class="mt-2 flex flex-wrap gap-2"><span v-for="m in expiringMedicines" :key="m.id" class="rounded-full bg-white px-3 py-1 text-xs font-medium text-amber-700">{{ m.name }} · {{ formatDate(m.expiry_date) }}</span></div><p v-else class="mt-2 text-sm text-amber-700">No medicines are expiring within the next 2 months.</p></div>
 
         <!-- Charts Row -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
