@@ -19,7 +19,6 @@ const props = defineProps({
     bmiBreakdown: Object,
     expiringMedicines: Array,
     completedVisits: Array,
-    visitHistory: Array,
 });
 
 const selectedDept = ref(props.filters?.department_id || '');
@@ -135,7 +134,6 @@ const statCards = [
         </div>
 
         <div v-if="showVisits" class="mb-6 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="px-5 py-4 border-b border-gray-100"><h3 class="text-sm font-semibold text-gray-800">Today’s Visit Breakdown</h3><p class="text-xs text-gray-500 mt-1">Personnel and students who attended or completed a visit today.</p></div><div v-if="completedVisits?.length" class="divide-y divide-gray-50"><div v-for="visit in completedVisits" :key="visit.id" class="px-5 py-3 flex items-center justify-between gap-4"><div><p class="text-sm font-semibold text-gray-800">{{ visit.patient }}</p><p class="text-xs text-gray-500">{{ visit.patient_type }} · {{ visit.reason || 'Clinic visit' }}</p></div><span class="text-xs font-medium text-green-700 whitespace-nowrap">{{ visit.date }}</span></div></div><p v-else class="px-5 py-8 text-center text-sm text-gray-400">No completed visits recorded today.</p></div>
-        <div class="mb-6 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"><div class="px-5 py-4 border-b border-gray-100"><h3 class="text-sm font-semibold text-gray-800">Visit History</h3><p class="text-xs text-gray-500 mt-1">Previous attended and completed clinic visits.</p></div><div v-if="visitHistory?.length" class="divide-y divide-gray-50"><div v-for="visit in visitHistory" :key="visit.id" class="px-5 py-3 flex items-center justify-between gap-4"><div><p class="text-sm font-semibold text-gray-800">{{ visit.patient }}</p><p class="text-xs text-gray-500">{{ visit.patient_type }} · {{ visit.reason || 'Clinic visit' }}</p></div><span class="text-xs font-medium text-slate-600 whitespace-nowrap">{{ visit.date }}</span></div></div><p v-else class="px-5 py-8 text-center text-sm text-gray-400">No previous visit records found.</p></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <button type="button" @click="showOverweight = !showOverweight" class="text-left bg-white border border-orange-200 rounded-xl p-5 shadow-sm hover:border-orange-300 hover:shadow-md transition-all"><p class="text-sm font-semibold text-orange-800">Overweight / Obese Personnel</p><p class="text-3xl font-bold text-orange-700 mt-1">{{ overweightPersonnel?.length || 0 }}</p><p class="text-xs text-orange-600 mt-1">Click for breakdown</p></button>
