@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Mail\TwoFactorCodeMail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,21 +31,11 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        // Get the authenticated user
-        $user = Auth::user();
+        // 2FA is temporarily disabled. LoginRequest has already authenticated
+        // the user, so continue directly to the intended destination.
+        $request->session()->regenerate();
 
-        // Generate and send OTP
-        $user->generateTwoFactorCode();
-        Mail::to($user->email)->send(new TwoFactorCodeMail($user));
-
-        // Store user ID and remember preference in session for 2FA verification
-        $request->session()->put('2fa:user:id', $user->id);
-        $request->session()->put('2fa:remember', $request->boolean('remember'));
-
-        // Log the user out — they must verify OTP first
-        Auth::guard('web')->logout();
-
-        return redirect()->route('2fa.index');
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**
